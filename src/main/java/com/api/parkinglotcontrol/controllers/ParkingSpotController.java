@@ -78,5 +78,21 @@ public class ParkingSpotController {
     }
 
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateParkingSpot(@PathVariable(value="id")UUID id,@RequestBody @Valid ParkingSpotDTO parkingSpotDTO){
+
+        Optional<ParkingSpotModel>parkingSpotModelOptional = parkingSpotService.findById(id);
+        if(!parkingSpotModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não encontrado :(");
+        }
+        var parkingSpotModel = new ParkingSpotModel();
+        //Utilizando o optional para copiar os dados para o model, mantendo a data e o id uma vez que e somente uma atualização
+        BeanUtils.copyProperties(parkingSpotDTO,parkingSpotModel);
+        parkingSpotModel.setId(parkingSpotModelOptional.get().getId());
+        parkingSpotModel.setRegistrationDate(parkingSpotModelOptional.get().getRegistrationDate());
+        return ResponseEntity.status(HttpStatus.OK).body(parkingSpotService.save(parkingSpotModel));
+    }
+
+
 
 }
