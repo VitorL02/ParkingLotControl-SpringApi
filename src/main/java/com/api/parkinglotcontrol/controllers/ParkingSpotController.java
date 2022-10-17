@@ -4,6 +4,8 @@ package com.api.parkinglotcontrol.controllers;
 import com.api.parkinglotcontrol.DTO.ParkingSpotDTO;
 import com.api.parkinglotcontrol.models.ParkingSpotModel;
 import com.api.parkinglotcontrol.services.ParkingSpotService;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,11 @@ public class ParkingSpotController {
     }
 
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Salva um novo cadastro!"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Algum problema ocorreu!Verifique se todos os dados obrigatorios foram preenchidos"),
+    })
     @PostMapping
     public ResponseEntity<Object> saveParkingSpot(@RequestBody @Valid ParkingSpotDTO parkingSpotDTO) {
         //TODO: criar uma customValidation
@@ -53,13 +60,20 @@ public class ParkingSpotController {
 
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna todos os cadastros feitos"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+    })
     @GetMapping
     public ResponseEntity<Page<ParkingSpotModel>> getAllParkingSpots(@PageableDefault(page = 0, size = 10, sort = "id"
             , direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(parkingSpotService.findAll(pageable));
     }
 
-
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Retorna somente um cadastro baseado no UUID"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+    })
     @GetMapping("/{id}")
     public ResponseEntity<Object> getOneParkingSpot(@PathVariable(value = "id") UUID id) {
         Optional<ParkingSpotModel> parkingSpotModelOptional = parkingSpotService.findById(id);
@@ -69,6 +83,11 @@ public class ParkingSpotController {
         return ResponseEntity.status(HttpStatus.OK).body(parkingSpotModelOptional.get());
     }
 
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Deleta um registro via id"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteParkingSpot(@PathVariable(value = "id") UUID id) {
         //Necessario verificar se realmente existe um id relacionado aquele registro
@@ -80,7 +99,10 @@ public class ParkingSpotController {
         return ResponseEntity.status(HttpStatus.OK).body("Registro deletado com sucesso");
     }
 
-
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Atualiza um cadastro baseado nos dados novos,necessario passar o UUID"),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+    })
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateParkingSpot(@PathVariable(value = "id") UUID id,
                                                     @RequestBody @Valid ParkingSpotDTO parkingSpotDTO) {
